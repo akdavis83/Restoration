@@ -53,14 +53,14 @@
 	//////////////////////////////////////////////////////////////////////////////////
 	//		create a texture Cube						//
 	//////////////////////////////////////////////////////////////////////////////////
-	THREEx.TextureCube.initWellKnownUrls('threex.skymap/')
+	THREEx.TextureCube.initWellKnownUrls('bower_components/threex.skymap/')
 	var textureCube	= THREEx.createTextureCube('skybox')
 
 	//////////////////////////////////////////////////////////////////////////////////
 	//		Comment								//
 	//////////////////////////////////////////////////////////////////////////////////	
 
-	THREEx.SpriteLensFlare.baseUrl	= 'threex.spritelensflare/'
+	THREEx.SpriteLensFlare.baseUrl	= 'bower_components/threex.spritelensflare/'
 
 	var flareColor	= new THREE.Color( 'red' );
 	var lensFlare	= new THREEx.SpriteLensFlare(flareColor)
