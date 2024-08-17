@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<title>Restoration</title>
+<link rel="icon" href="https://fav.farm/🔥" />
+<script src='vendor/three.js/build/three.min.js'></script>
+<script src='vendor/three.js/examples/js/libs/dat.gui.min.js'></script>
+
+<!-- includes for THREE.EffectComposer -->
+<script src="vendor/three.js/examples/js/postprocessing/EffectComposer.js"></script>
+<script src="vendor/three.js/examples/js/postprocessing/RenderPass.js"></script>
+<script src="vendor/three.js/examples/js/postprocessing/ShaderPass.js"></script>
+<script src="vendor/three.js/examples/js/postprocessing/MaskPass.js"></script>
+<script src="vendor/three.js/examples/js/postprocessing/TexturePass.js"></script>
+<script src="vendor/three.js/examples/js/postprocessing/SavePass.js"></script>
+<script src="vendor/three.js/examples/js/shaders/CopyShader.js"></script>
+<script src="vendor/three.js/examples/js/shaders/HorizontalBlurShader.js"></script>
+<script src="vendor/three.js/examples/js/shaders/VerticalBlurShader.js"></script>
+
+<script src="vendor/three.js/examples/js/shaders/FresnelShader.js"></script>
+
+<script src='../threex.bubble.js'></script>
+<script src='../threex.fresneldatgui.js'></script>
+
+<!-- include for threex.skymap -->
+<script src='bower_components/threex.skymap/threex.texturecube.js'></script>
+<script src='bower_components/threex.skymap/threex.skymap.js'></script>
+
+<script src='bower_components/threex.spritelensflare/threex.spritelensflare.js'></script>
+
+
+<body style='margin: 0px; background-color: #bbbbbb; overflow: hidden;'>
+	
+<div style="position: absolute; top: 0px; left: 50px; right: 10px; z-index: 10; color: rgb(75, 75, 75);">
+	<h2>
+		Lord, restore our fortunes, restore our comforts, restore our health, restore our devoured years, restore the joy of Thy salvation, when the thief is found he must restore double-even sevenfold, restore our lives, may we no longer be robbed, spoiled and snared as prey with none to say restore; Lord, restore all things in the precious, powerful, and mighty name of Jesus Christ of Nazareth, Amen.
+	</h2>
+</div>
+<div style="position: absolute; bottom: 2px; left: 50px; right: 10px; z-index: 10; color: rgba(255, 255, 255, 0.516);">
+	<h1>
+		11 And they asked him, saying, Why say the scribes that Elias must first come? 12 And he answered and told them, Elias verily cometh first, and restoreth all things; and how it is written of the Son of man, that he must suffer many things, and be set at nought. 13 But I say unto you, That Elias is indeed come, and they have done unto him whatsoever they listed, as it is written of him. (Mark 9:11-13)
+	</h1>
+</div>
+
+	<script>
+	var renderer	= new THREE.WebGLRenderer({ antialias: true, alpha: true });
+	renderer.setSize( window.innerWidth, window.innerHeight );
+	document.body.appendChild( renderer.domElement );
+
+	var onRenderFcts= [];
+	var scene	= new THREE.Scene();
+	var camera	= new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 2000 )
+	camera.position.z = -3
+
+	//////////////////////////////////////////////////////////////////////////////////
+	//		create a texture Cube						//
+	//////////////////////////////////////////////////////////////////////////////////
+	THREEx.TextureCube.initWellKnownUrls('bower_components/threex.skymap/')
+	var textureCube	= THREEx.createTextureCube('skybox')
+
+	//////////////////////////////////////////////////////////////////////////////////
+	//		Comment								//
+	//////////////////////////////////////////////////////////////////////////////////	
+
+	THREEx.SpriteLensFlare.baseUrl	= 'bower_components/threex.spritelensflare/'
+
+	var flareColor	= new THREE.Color( 'red' );
+	var lensFlare	= new THREEx.SpriteLensFlare(flareColor)
+	lensFlare.position.set(-500, 200, 512);
+
+	scene.add( lensFlare );	
+
+	//////////////////////////////////////////////////////////////////////////////////
+	//		Comment								//
+	//////////////////////////////////////////////////////////////////////////////////
+
+	var material	= new THREE.ShaderMaterial({
+		fragmentShader	: THREE.FresnelShader.fragmentShader,
+		vertexShader	: THREE.FresnelShader.vertexShader,
+		uniforms	: THREE.UniformsUtils.clone( THREE.FresnelShader.uniforms ),
+		shading		: THREE.FlatShading,
+		// side		: THREE.BackSide,
+	});
+	// set textureCube
+	material.uniforms[ "tCube" ].value = textureCube;
+
+	// THREEx.fresnelDatGui(material)
+
+	//////////////////////////////////////////////////////////////////////////////////
+	//		Comment								//
+	//////////////////////////////////////////////////////////////////////////////////
+	// var geometry	= new THREE.SphereGeometry(0.5, 32, 16)
+	// var object3d	= new THREE.Mesh(geometry, material)
+	// object3d.position.x	= 2
+	// scene.add(object3d)
+
+	// var geometry	= new THREE.BoxGeometry(0.5, 0.5, 0.5)
+	// var object3d	= new THREE.Mesh(geometry, material)
+	// object3d.position.x	= -1.5
+	// scene.add(object3d)
+
+	// var geometry	= new THREE.CylinderGeometry(0.5, 0.5, 1, 32, 1, false)
+	// var object3d	= new THREE.Mesh(geometry, material)
+	// object3d.position.x	= -2.5
+	// scene.add(object3d)
+
+
+	// build a diamon geometry
+	var geometry	= new THREE.Geometry();
+	var tmpGeometry	= new THREE.CylinderGeometry(0.5, 0.9, 0.2, 20, 1, false)
+	var tmpMatrix	= new THREE.Matrix4().makeTranslation(0, +tmpGeometry.parameters.height/2, 0)
+	geometry.merge(tmpGeometry, tmpMatrix)
+	var tmpGeometry	= new THREE.CylinderGeometry(0.9, 0, 1, 20, 1, false)
+	var tmpMatrix	= new THREE.Matrix4().makeTranslation(0, -tmpGeometry.parameters.height/2, 0)
+	geometry.merge(tmpGeometry, tmpMatrix)
+
+	var object3d	= new THREE.Mesh(geometry, material)
+	// object3d.scale.multiplyScalar(1.5)
+	object3d.position.y	= 0.5
+	scene.add(object3d)
+	onRenderFcts.push(function(){
+		var now	= Date.now()/1000
+		var angle	= now*Math.PI*2 * 0.1
+		object3d.rotation.y	= angle
+	})
+	
+	//////////////////////////////////////////////////////////////////////////////////
+	//		Camera Controls							//
+	//////////////////////////////////////////////////////////////////////////////////
+	var mouse	= {x : 0, y : 0}
+	document.addEventListener('mousemove', function(event){
+		mouse.x	= (event.clientX / window.innerWidth ) - 0.5
+		mouse.y	= (event.clientY / window.innerHeight) - 0.5
+	}, false)
+	var controlsEnabled	= true
+	onRenderFcts.push(function(delta, now){
+		// honor controlsEnabled
+		if(controlsEnabled === false) return
+		camera.position.x += (mouse.x*5 +1 - camera.position.x) * (delta*3)
+		camera.position.y += (mouse.y*5 -1 - camera.position.y) * (delta*3)
+		camera.lookAt( scene.position )
+	})
+	renderer.domElement.addEventListener('click', function(event){
+		controlsEnabled	= controlsEnabled === true ? false : true
+	}, false)
+	//////////////////////////////////////////////////////////////////////////////////
+	//		add a skybox							//
+	//////////////////////////////////////////////////////////////////////////////////
+	var mesh	= THREEx.createSkymap({
+		textureCube	: textureCube
+	})
+	scene.add( mesh )
+
+	//////////////////////////////////////////////////////////////////////////////////
+	//		Render the scene
+	//////////////////////////////////////////////////////////////////////////////////
+
+	onRenderFcts.push(function(){
+		renderer.render( scene, camera );		
+	})
+	
+	//////////////////////////////////////////////////////////////////////////////////
+	//		loop runner							//
+	//////////////////////////////////////////////////////////////////////////////////
+	var lastTimeMsec= null
+	requestAnimationFrame(function animate(nowMsec){
+		// keep looping
+		requestAnimationFrame( animate );
+		// measure time
+		lastTimeMsec	= lastTimeMsec || nowMsec-1000/60
+		var deltaMsec	= Math.min(200, nowMsec - lastTimeMsec)
+		lastTimeMsec	= nowMsec
+		// call each update function
+		onRenderFcts.forEach(function(onRenderFct){
+			onRenderFct(deltaMsec/1000, nowMsec/1000)
+		})
+	})		
+</script></body>
